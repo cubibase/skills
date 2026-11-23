@@ -17,11 +17,16 @@ Canonical, always-current sources:
 ## Control API (api.cubibase.com)
 
 `Authorization: Bearer $CUBIBASE_TOKEN`. Key operations (see OpenAPI for all):
-- Projects: listProjects, createProject, getProject, getProvisioning, deleteProject
-- Schema: listTables, createTable, setExposure, createPolicy, createSqlFunction
-- Data tools: listRows, insertRow, runSql (read-only)
-- Observability: requestLogs, auditLogs, usage
+- Projects: listProjects, createProject, getProject, updateProject, getProvisioning, deleteProject
+- Schema: listTables, createTable, addColumn, dropColumn, setExposure, listPolicies, createPolicy, dropPolicy, createSqlFunction, dropSqlFunction
+- Database objects: db-triggers (list/create/enable/drop), indexes (list/create/drop), types (enum/composite/labels), views (list/create/refresh/api-access/drop)
+- Data tools: listRows, insertRow, updateRow, deleteRow, runSql (read-only)
+- Storage: buckets CRUD, objects list/delete, uploads (presigned S3 POST + complete), sign (public/signed download URL), usage
+- Functions: CRUD, deployments (create/list/activate), secrets (set/delete), triggers (http/database/storage/schedule), test invocation, executions, templates, usage
+- Observability: requestLogs, auditLogs, usage, api-keys (list/create/revoke)
 - Tokens: listTokens, createToken, revokeToken
+
+All of the above are wrapped by `@cubibasehq/client` (typed methods), `@cubibasehq/mcp` (75 tools; `CUBIBASE_READ_ONLY=1`, `CUBIBASE_FEATURES` groups), and `@cubibasehq/cli` (`storage`, `functions`, `triggers`, `indexes`, `types`, `views`, `policies` commands).
 
 ## Data API ({slug}.api.cubibase.com)
 

@@ -48,7 +48,7 @@ You cannot complete registration or token creation for the user — hand them th
 
 Prefer whichever surface fits the session:
 
-**MCP** (if the host supports it): configure `npx -y @cubibasehq/mcp` with env `CUBIBASE_TOKEN` (and optional `CUBIBASE_SERVICE_KEY` for Data API tools). Tools cover projects, tables, exposure, policies, rows, read-only SQL, logs, usage.
+**MCP** (if the host supports it): configure `npx -y @cubibasehq/mcp` with env `CUBIBASE_TOKEN` (and optional `CUBIBASE_SERVICE_KEY` for Data API tools). 75 tools cover projects, full schema (tables, columns, policies, triggers, indexes, types, views), rows, read-only SQL, storage (buckets, `cubibase_upload_file`, signed links), functions (create, deploy, secrets, triggers, test, execution logs), keys, logs, usage, and `cubibase_search_docs` (offline documentation search). Safety: `CUBIBASE_READ_ONLY=1` hides all mutating tools; `CUBIBASE_FEATURES=database,storage` narrows the tool groups.
 
 **CLI** (shell):
 ```bash
@@ -58,6 +58,10 @@ npx -y @cubibasehq/cli tables create <projectId> --name notes \
   --rls-user-column user_id
 npx -y @cubibasehq/cli exposure <projectId> notes --select true --insert true --update true --delete true
 npx -y @cubibasehq/cli rows list <projectId> notes --limit 10
+npx -y @cubibasehq/cli storage create-bucket <projectId> --name avatars --public true
+npx -y @cubibasehq/cli storage upload <projectId> --bucket avatars --path u1.png --file ./u1.png
+npx -y @cubibasehq/cli functions create <projectId> --name hello --file ./hello.ts
+npx -y @cubibasehq/cli functions deploy <projectId> hello
 ```
 
 **HTTPS** (any environment): `Authorization: Bearer $CUBIBASE_TOKEN` on api.cubibase.com; the OpenAPI document lists every operation with a stable operationId.
