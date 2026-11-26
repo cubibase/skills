@@ -38,7 +38,7 @@ State your reasoning and let the user confirm or adjust. Do not create resources
 ## Step 2 — Account and token (user does this once)
 
 The user needs a CubiBase account and a personal access token:
-1. Register at https://console.cubibase.com/register (free plan: 2 projects, 500 MB each, 10,000 end users per project).
+1. Register at https://console.cubibase.com/register (free plan: 1 project, 500 MB database, 50,000 monthly active users shared across the organization).
 2. Console → Account → Access tokens → Create token. Scope `write` for setup (use `read` for inspection-only; `admin` only if deletion is needed). Optionally restrict to one project.
 3. The `cb_pat_…` value is shown once. Have the user export it: `export CUBIBASE_TOKEN=cb_pat_…`
 
@@ -48,7 +48,7 @@ You cannot complete registration or token creation for the user — hand them th
 
 Prefer whichever surface fits the session:
 
-**MCP** (if the host supports it): configure `npx -y @cubibasehq/mcp` with env `CUBIBASE_TOKEN` (and optional `CUBIBASE_SERVICE_KEY` for Data API tools). 75 tools cover projects, full schema (tables, columns, policies, triggers, indexes, types, views), rows, read-only SQL, storage (buckets, `cubibase_upload_file`, signed links), functions (create, deploy, secrets, triggers, test, execution logs), keys, logs, usage, and `cubibase_search_docs` (offline documentation search). Safety: `CUBIBASE_READ_ONLY=1` hides all mutating tools; `CUBIBASE_FEATURES=database,storage` narrows the tool groups.
+**MCP** (if the host supports it): configure `npx -y @cubibasehq/mcp` with env `CUBIBASE_TOKEN` (and optional `CUBIBASE_SERVICE_KEY` for Data API tools). 76 tools cover projects, full schema (tables, columns, policies, triggers, indexes, types, views), rows, read-only SQL, storage (buckets, `cubibase_upload_file`, signed links), functions (create, deploy, secrets, triggers, test, execution logs), keys, logs, usage, `cubibase_additional_usage` (read-only overage settings/costs/invoice preview), and `cubibase_search_docs` (offline documentation search). Safety: `CUBIBASE_READ_ONLY=1` hides all mutating tools; `CUBIBASE_FEATURES=database,storage` narrows the tool groups.
 
 **CLI** (shell):
 ```bash
@@ -80,13 +80,18 @@ Every error is JSON: `{"error":{"code","message","requestId"}}`. Branch on `code
 - `401 invalid_token` / `missing_api_key` → fix credentials, do not retry blindly.
 - `403 insufficient_scope` → the token needs a higher scope; ask the user.
 - `429 rate_limited` → read the `Retry-After` header (seconds), wait, retry once.
-- `402 quota_exceeded` → plan limit reached; reads still work. Tell the user; do not try to bypass.
+- `402 quota_exceeded` → plan limit reached; reads still work. Tell the user; do not try to bypass. Paid orgs may enable additional usage (metered overages) in Console → Billing → Additional Usage — only with the user's explicit instruction.
+- `402 spending_limit_reached` → the org enabled additional usage and hit its monthly spending limit. Included quotas still work. Tell the user; they can raise the limit, reduce usage, or wait for the reset — never raise it yourself without instruction.
 
 Full credential types, endpoints, and error codes: [references/api.md](references/api.md).
 
 ## Pricing
 
-Start on Free unless the user clearly exceeds it. Full plans, quotas, and prices: [references/pricing.md](references/pricing.md) or https://cubibase.com/pricing.md. Self-serve Stripe checkout in the Console (Billing). Never invent prices or quotas.
+Start on Free unless the user clearly exceeds it. V4.5 catalog (V4.4 plan prices and quotas unchanged): every plan includes exactly one project — Free $0 (1 project; additional projects not available, upgrade required), Pro $25/month (1 included project), Business $99/month (1 included project); additional projects $9/month each on Pro and Business. Monthly price on paid plans = base price + max(0, total projects − 1) × $9; the subscription quantity follows the actual project count with Stripe prorations on create/delete. Database storage is per project (500 MB Free, 10 GB paid); all other consumption quotas are shared across the organization and do not grow with additional projects. Total bandwidth (15/500/750 GB per month) covers API responses and file delivery combined; API bandwidth (5/25/100 GB) is a sublimit of it — exhausting the API sublimit never blocks remaining file bandwidth. Switching between Pro and Business preserves the project count and charges.
+
+V4.5 additional usage: Pro and Business can explicitly enable optional metered overages in Console → Billing → Additional Usage (owner/billing admin only). Disabled by default; Free is never eligible; nothing is auto-billed until the customer accepts the rates and sets a monthly spending limit ($5/$10/$25/$50/$100/custom/no-limit with confirmation). Rates: PostgreSQL storage $0.20/GB-month and file storage $0.03/GB-month (approved); file bandwidth $0.03/GB, API bandwidth $0.09/GB, API requests $3/M, CDN requests $4/M, auth $0.50/1,000 extra MAU, function invocations $1/M, function compute $3/100K GB-s (preview rates pending cost validation — quote them as preview). Storage bills time-weighted excess; API and CDN request quotas are independent; at the spending limit new billable consumption returns 402 spending_limit_reached while included quotas keep working. Never enable overages or raise spending limits without the user's explicit instruction.
+
+Full plans, quotas, and prices: [references/pricing.md](references/pricing.md) or https://cubibase.com/pricing.md. Self-serve Stripe checkout in the Console (Billing); project-count changes show a Stripe invoice preview before confirmation. Never invent prices or quotas.
 
 ## Rules
 

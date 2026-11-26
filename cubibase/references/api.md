@@ -24,9 +24,10 @@ Canonical, always-current sources:
 - Storage: buckets CRUD, objects list/delete, uploads (presigned S3 POST + complete), sign (public/signed download URL), usage
 - Functions: CRUD, deployments (create/list/activate), secrets (set/delete), triggers (http/database/storage/schedule), test invocation, executions, templates, usage
 - Observability: requestLogs, auditLogs, usage, api-keys (list/create/revoke)
+- Billing (read-only): catalog (public pricing incl. additionalUsage rates), overage/settings, overage/usage, overage/invoice-preview. Activation and spending-limit changes are owner-only financial consent actions in the Console (Billing → Additional Usage), not agent operations
 - Tokens: listTokens, createToken, revokeToken
 
-All of the above are wrapped by `@cubibasehq/client` (typed methods), `@cubibasehq/mcp` (75 tools; `CUBIBASE_READ_ONLY=1`, `CUBIBASE_FEATURES` groups), and `@cubibasehq/cli` (`storage`, `functions`, `triggers`, `indexes`, `types`, `views`, `policies` commands).
+All of the above are wrapped by `@cubibasehq/client` (typed methods), `@cubibasehq/mcp` (76 tools; `CUBIBASE_READ_ONLY=1`, `CUBIBASE_FEATURES` groups), and `@cubibasehq/cli` (`storage`, `functions`, `triggers`, `indexes`, `types`, `views`, `policies` commands).
 
 ## Data API ({slug}.api.cubibase.com)
 
@@ -44,4 +45,5 @@ Every error: `{"error":{"code","message","requestId"}}` with HTTP status.
 - 403 insufficient_scope → higher scope needed (ask the user)
 - 403 project_paused → Free plan inactivity; resume in Console
 - 429 rate_limited → wait `Retry-After` seconds, retry once
-- 402 quota_exceeded → plan limit; reads still work; tell the user
+- 402 quota_exceeded → plan limit; reads still work; tell the user (paid orgs may opt in to metered additional usage in the Console — only with explicit user instruction)
+- 402 spending_limit_reached → org enabled additional usage and hit its monthly spending limit; included quotas unaffected; the owner can raise the limit, reduce usage, or wait for reset
