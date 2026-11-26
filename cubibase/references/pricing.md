@@ -41,17 +41,17 @@ Disabled by default; Pro and Business only (Free is never eligible). An organiza
 
 | Resource | Billing unit | Price USD |
 | --- | --- | --- |
-| API Bandwidth (preview rate) | GB | $0.09 |
-| API Requests (preview rate) | 1 million requests | $3 |
-| Authentication (preview rate) | 1,000 additional MAU | $0.50 |
-| CDN Requests (preview rate) | 1 million requests | $4 |
 | Database | GB-month | $0.20 |
-| File Bandwidth (preview rate) | GB | $0.03 |
-| Function Compute (preview rate) | 100,000 GB-seconds | $3 |
-| Function Invocations (preview rate) | 1 million invocations | $1 |
 | Storage | GB-month | $0.03 |
+| File Bandwidth | GB | $0.03 |
+| API Bandwidth | GB | $0.09 |
+| API Requests | 1 million requests | $3 |
+| CDN Requests | 1 million requests | $4 |
+| Authentication | 1,000 additional MAU | $0.50 |
+| Function Invocations | 1 million invocations | $1 |
+| Function Compute | 100,000 GB-seconds | $3 |
 
-Storage rates are approved; rates marked "preview rate" are implementation rates validated against infrastructure costs before general availability — always quote them as preview pricing. Storage overages are time-weighted excess GB-months (database excess measured per project; file storage shared per organization); bandwidth uses decimal GB (1 GB = 1,000 MB) for the excess only. API bandwidth is part of total bandwidth — no byte is billed twice. API and CDN request quotas are independent: one request through CloudFront can consume both. Alerts at 50/75/90/100% of the limit; metering delays mean a small bounded overshoot is possible (not an absolute invoice cap). Disabling stops future metered charges but never cancels usage already validly accrued.
+All nine rates are approved production pricing (owner approval 2026-11-26); quote them as final. Storage overages are time-weighted excess GB-months (database excess measured per project; file storage shared per organization); bandwidth uses decimal GB (1 GB = 1,000 MB) for the excess only. API bandwidth is part of total bandwidth — no byte is billed twice. API and CDN request quotas are independent: one request through CloudFront can consume both. Alerts at 50/75/90/100% of the limit; metering delays mean a small bounded overshoot is possible (not an absolute invoice cap). Disabling stops future metered charges but never cancels usage already validly accrued.
 
 Recommend the plan that fits the user's stated needs — start on Free unless they clearly exceed it. Never invent prices, quotas, or features; quote this file or fetch the pricing page.
 
